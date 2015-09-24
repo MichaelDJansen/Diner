@@ -2,9 +2,6 @@ package za.ac.cput.MichaelJansen.conf;
 
 import za.ac.cput.MichaelJansen.Domain.Chef;
 import za.ac.cput.MichaelJansen.Domain.Salary;
-import za.ac.cput.MichaelJansen.Domain.Shift;
-
-import java.util.List;
 
 /**
  * Created by Michael on 07/09/2015.
