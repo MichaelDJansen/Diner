@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/**")
 public class HomePage
 {
-    @RequestMapping(value = "home", method = RequestMethod.GET)
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
     public String Index()
     {
-        return "Home Page of the Diner App";
+        return "Welcome to the home page of the Diner App";
     }
 }
