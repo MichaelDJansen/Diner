@@ -19,13 +19,13 @@ import java.util.List;
  * Created by Michael on 18/09/2015.
  */
 @RestController
-@RequestMapping("/api/menuItems/**")
+@RequestMapping("/menuItems/**")
 public class MenuItemPage {
 
     @Autowired
     private MenuItemService service;
 
-    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
     public String menuItemIndex()
     {
         return "View Menu";

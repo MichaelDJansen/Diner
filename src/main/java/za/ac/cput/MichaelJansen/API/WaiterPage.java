@@ -16,10 +16,10 @@ import java.util.List;
 /**
  * Created by Michael on 18/09/2015.
  */
-@RestController
-@RequestMapping("/api/waiters/**")
+//@RestController
+//@RequestMapping("/api/waiters/**")
 public class WaiterPage {
-
+/*
     @Autowired
     private WaiterService waiterService;
 
@@ -73,5 +73,5 @@ public class WaiterPage {
 
         return hateoas;
     }
-
+*/
 }
