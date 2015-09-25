@@ -75,7 +75,7 @@ public class MenuItemPage {
         service.save(menuItem);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(ucBuilder.path("/subject/{id}").buildAndExpand(menuItem.getId()).toUri());
+        headers.setLocation(ucBuilder.path("/menuItems/{id}").buildAndExpand(menuItem.getId()).toUri());
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
