@@ -2,10 +2,12 @@ package za.ac.cput.MichaelJansen.API;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 import za.ac.cput.MichaelJansen.Domain.MenuItem;
 import za.ac.cput.MichaelJansen.Model.MenuItemResource;
 import za.ac.cput.MichaelJansen.Service.MenuItemService;
@@ -21,7 +23,7 @@ import java.util.List;
 public class MenuItemPage {
 
     @Autowired
-    private MenuItemService menuItemService;
+    private MenuItemService service;
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String menuItemIndex()
@@ -29,46 +31,88 @@ public class MenuItemPage {
         return "View Menu";
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public List<MenuItemResource> getMenuItems()
-    {
-        List<MenuItemResource> hateoas = new ArrayList<MenuItemResource>();
-        List<MenuItem> menuItems = menuItemService.getMenuItems();
 
-        for(MenuItem menuItem: menuItems)
-        {
-            MenuItemResource res = new MenuItemResource
-                    .Builder(menuItem.getId(),menuItem.getItemName(),menuItem.getType(),menuItem.getDescription(),menuItem.getPrice())
-                    .build();
 
-            Link allMenuItems = new
-                    Link("http://localhost:8181/api/menuItems/all").
-                    withRel("menuItems");
+    //-------------------Retrieve All MenuItems--------------------------------------------------------
 
-            res.add(allMenuItems);
-            hateoas.add(res);
+    @RequestMapping(value = "/all/", method = RequestMethod.GET)
+    public ResponseEntity<List<MenuItem>> listAllMenuItems() {
+        List<MenuItem> menuItems = service.getMenuItems();
+        if(menuItems.isEmpty()){
+            return new ResponseEntity<List<MenuItem>>(HttpStatus.NO_CONTENT);//You many decide to return HttpStatus.NOT_FOUND
         }
-
-        return hateoas;
+        return new ResponseEntity<List<MenuItem>>(menuItems, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public MenuItemResource getMenuItem(@PathVariable Integer id)
-    {
-        MenuItemResource hateoas;
-        MenuItem menuItem = menuItemService.getMenuItem(id);
 
-        MenuItemResource res = new MenuItemResource
-                .Builder(menuItem.getId(),menuItem.getItemName(),menuItem.getType(),menuItem.getDescription(),menuItem.getPrice())
+    //-------------------Retrieve Single MenuItem--------------------------------------------------------
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MenuItem> getMenuItem(@PathVariable("id") Integer id) {
+        System.out.println("Fetching MenuItem with id " + id);
+        MenuItem menuItem = service.findById(id);
+        if (menuItem == null) {
+            System.out.println("menuItem with id " + id + " not found");
+            return new ResponseEntity<MenuItem>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<MenuItem>(menuItem, HttpStatus.OK);
+    }
+
+
+
+    //-------------------Create a MenuItem--------------------------------------------------------
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public ResponseEntity<Void> createMenuItem(@RequestBody MenuItem menuItem,UriComponentsBuilder ucBuilder) {
+        System.out.println("Creating MenuItem " + menuItem.getItemName());
+
+//     USE THIS IF YOU WANT TO CHECK UNIQUE OBJECT
+      if (service.isMenuItemExists(menuItem)) {
+            System.out.println("A MenuItem with name " + menuItem.getItemName() + " already exist");
+            return new ResponseEntity<Void>(HttpStatus.CONFLICT);
+        }
+
+        service.save(menuItem);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(ucBuilder.path("/subject/{id}").buildAndExpand(menuItem.getId()).toUri());
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+    }
+
+    //------------------- Update a MenuItem --------------------------------------------------------
+
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable("id") Integer id, @RequestBody MenuItem menuItem) {
+        System.out.println("Updating menuItem " + id);
+
+        MenuItem currentMenuItem = service.findById(id);
+
+        if (currentMenuItem==null) {
+            System.out.println("MenuItem with id " + id + " not found");
+            return new ResponseEntity<MenuItem>(HttpStatus.NOT_FOUND);
+        }
+
+        MenuItem updatedMenuItem = new MenuItem
+                .Builder()
+                .copy(currentMenuItem)
                 .build();
+        service.update(updatedMenuItem);
+        return new ResponseEntity<MenuItem>(updatedMenuItem, HttpStatus.OK);
+    }
 
-        Link menuItems = new
-                Link("http://localhost:8181/api/menuItems/" + res.getMenuItemId()).
-                withRel("menuItems");
+    //------------------- Delete a MenuItem --------------------------------------------------------
 
-        res.add(menuItems);
-        hateoas = res;
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<MenuItem> deleteMenuItem(@PathVariable("id") Integer id) {
+        System.out.println("Fetching & Deleting menuItem with id " + id);
 
-        return hateoas;
+        MenuItem subject = service.findById(id);
+        if (subject == null) {
+            System.out.println("Unable to delete. MenuItem with id " + id + " not found");
+            return new ResponseEntity<MenuItem>(HttpStatus.NOT_FOUND);
+        }
+
+        service.delete(subject);
+        return new ResponseEntity<MenuItem>(HttpStatus.NO_CONTENT);
     }
 }

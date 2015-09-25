@@ -39,6 +39,8 @@ public class MenuItem implements Serializable
         private float price;
         private String extras;
 
+        public Builder(){}
+
         public Builder(int id,String itemName,String type,String description,float price) {
             this.id = id;
             this.itemName = itemName;

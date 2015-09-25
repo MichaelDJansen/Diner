@@ -51,4 +51,41 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         return allMenuItems;
     }
+
+    @Override
+    public MenuItem findById(int id) {
+        return repository.findOne(id);
+    }
+
+    @Override
+    public MenuItem save(MenuItem entity) {
+        return repository.save(entity);
+    }
+
+    @Override
+    public MenuItem update(MenuItem entity) {
+        return repository.save(entity);
+    }
+
+    @Override
+    public void delete(MenuItem entity) {
+        repository.delete(entity);
+
+    }
+
+    public Boolean isMenuItemExists(MenuItem menuItem){
+        Boolean exists = false;
+
+        Iterable<MenuItem> menuItems = repository.findAll();
+        for(MenuItem temp: menuItems)
+        {
+            if(menuItem.getItemName().equalsIgnoreCase(temp.getItemName()))
+            {
+                exists = true;
+                break;
+            }
+        }
+
+        return exists;
+    }
 }

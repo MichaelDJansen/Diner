@@ -13,4 +13,15 @@ public interface MenuItemService {
     MenuItem getMenuItem(int id);
 
     List<MenuItem> getType(String type);
+
+    public MenuItem findById(int id);
+
+    public MenuItem save(MenuItem entity);
+
+    public MenuItem update(MenuItem entity);
+
+    public void delete(MenuItem entity);
+
+    public Boolean isMenuItemExists(MenuItem menuItem);
+
 }
