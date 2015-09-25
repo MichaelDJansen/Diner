@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Michael on 18/09/2015.
  */
 @RestController
-@RequestMapping("/menuItems/**")
+@RequestMapping("/api/menuItems/**")
 public class MenuItemPage {
 
     @Autowired
@@ -30,6 +30,7 @@ public class MenuItemPage {
     {
         return "View Menu";
     }
+
 
 
     //-------------------Retrieve All MenuItems--------------------------------------------------------
