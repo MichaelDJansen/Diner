@@ -106,13 +106,13 @@ public class MenuItemPage {
     public ResponseEntity<MenuItem> deleteMenuItem(@PathVariable("id") Integer id) {
         System.out.println("Fetching & Deleting menuItem with id " + id);
 
-        MenuItem subject = service.findById(id);
-        if (subject == null) {
+        MenuItem menuItem = service.findById(id);
+        if (menuItem == null) {
             System.out.println("Unable to delete. MenuItem with id " + id + " not found");
             return new ResponseEntity<MenuItem>(HttpStatus.NOT_FOUND);
         }
 
-        service.delete(subject);
+        service.delete(menuItem);
         return new ResponseEntity<MenuItem>(HttpStatus.NO_CONTENT);
     }
 }
